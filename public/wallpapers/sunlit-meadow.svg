@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <linearGradient id="meadowSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7CA3B5" />
+      <stop offset="50%" stop-color="#B6D2DA" />
+      <stop offset="85%" stop-color="#FCEFD8" />
+      <stop offset="100%" stop-color="#EBE3BA" />
+    </linearGradient>
+    <linearGradient id="hillGolden1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9EAF67" />
+      <stop offset="100%" stop-color="#677A38" />
+    </linearGradient>
+    <linearGradient id="hillGolden2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6D853A" />
+      <stop offset="100%" stop-color="#4B5E24" />
+    </linearGradient>
+    <linearGradient id="hillGolden3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4C6322" />
+      <stop offset="100%" stop-color="#2C3B12" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#meadowSky)" />
+
+  <!-- Gentle Sun -->
+  <circle cx="1380" cy="340" r="180" fill="#FFF8E0" opacity="0.85" />
+  <circle cx="1380" cy="340" r="420" fill="#FFE8B5" opacity="0.25" />
+
+  <!-- Rolling Cotswold Hills -->
+  <path d="M0,520 Q500,430 1100,490 T1920,440 L1920,1080 L0,1080 Z" fill="#90A76A" opacity="0.75" />
+  <path d="M0,620 Q600,530 1200,600 T1920,550 L1920,1080 L0,1080 Z" fill="url(#hillGolden1)" />
+
+  <!-- Cottage Silhouettes in Valley -->
+  <g fill="#43522E" opacity="0.9">
+    <rect x="720" y="580" width="34" height="22" rx="2" />
+    <polygon points="715,580 737,562 759,580" />
+    <rect x="748" y="565" width="4" height="10" />
+  </g>
+
+  <!-- Closer Rolling Field -->
+  <path d="M0,740 Q450,660 1000,720 T1920,670 L1920,1080 L0,1080 Z" fill="url(#hillGolden2)" />
+
+  <!-- Meadow Foreground with Wildflower Accents -->
+  <path d="M0,860 Q550,780 1250,840 T1920,790 L1920,1080 L0,1080 Z" fill="url(#hillGolden3)" />
+
+  <!-- Daisy & Clover Specs -->
+  <g fill="#FFFDEB" opacity="0.75">
+    <circle cx="210" cy="910" r="3" />
+    <circle cx="340" cy="940" r="4" />
+    <circle cx="520" cy="890" r="3" />
+    <circle cx="680" cy="930" r="4" />
+    <circle cx="890" cy="910" r="3" />
+    <circle cx="1120" cy="950" r="4" />
+    <circle cx="1340" cy="900" r="3" />
+    <circle cx="1520" cy="935" r="4" />
+    <circle cx="1780" cy="890" r="3" />
+  </g>
+  <g fill="#E4C1F9" opacity="0.6">
+    <circle cx="280" cy="930" r="3.5" />
+    <circle cx="450" cy="960" r="3" />
+    <circle cx="750" cy="940" r="3.5" />
+    <circle cx="1020" cy="970" r="3" />
+    <circle cx="1220" cy="920" r="3.5" />
+    <circle cx="1640" cy="950" r="3.5" />
+  </g>
+
+  <!-- Warm Golden Hour Glow -->
+  <rect width="1920" height="1080" fill="#E8B54C" opacity="0.08" />
+</svg>

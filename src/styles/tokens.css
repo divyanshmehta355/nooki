@@ -1,0 +1,118 @@
+:root {
+  /* Core Light-Mode Palette (from Master Prompt) */
+  --nooki-warm-ivory: #F7F4ED;
+  --nooki-soft-white: #FFFEFA;
+  --nooki-oat-beige: #EAE3D7;
+  --nooki-sage-mist: #E5EEE5;
+  --nooki-green: #28765F;
+  --nooki-green-hover: #1F614E;
+  --nooki-green-subtle: rgba(40, 118, 95, 0.12);
+  --nooki-forest-ink: #243B33;
+  --nooki-muted-stone: #777970;
+  --nooki-warm-amber: #B87937;
+  --nooki-error-red: #C84B4B;
+
+  /* Semantic Theme Tokens (Default: Light) */
+  --bg-primary: var(--nooki-warm-ivory);
+  --bg-surface: var(--nooki-soft-white);
+  --bg-surface-elevated: #FFFFFF;
+  --bg-muted: var(--nooki-oat-beige);
+  --bg-highlight: var(--nooki-sage-mist);
+  --bg-active: rgba(40, 118, 95, 0.1);
+
+  --text-primary: var(--nooki-forest-ink);
+  --text-secondary: var(--nooki-muted-stone);
+  --text-muted: #8E9087;
+  --text-inverse: #FFFEFA;
+
+  --accent-primary: var(--nooki-green);
+  --accent-hover: var(--nooki-green-hover);
+  --accent-subtle: var(--nooki-green-subtle);
+
+  --border-subtle: var(--nooki-oat-beige);
+  --border-strong: #D5CCC0;
+  --border-focus: var(--nooki-green);
+
+  --status-warning: var(--nooki-warm-amber);
+  --status-error: var(--nooki-error-red);
+  --status-success: var(--nooki-green);
+
+  /* Elevation Shadows */
+  --shadow-subtle: 0 2px 8px rgba(36, 59, 51, 0.04), 0 1px 2px rgba(36, 59, 51, 0.03);
+  --shadow-card: 0 4px 16px rgba(36, 59, 51, 0.06), 0 1px 3px rgba(36, 59, 51, 0.04);
+  --shadow-popover: 0 10px 30px rgba(36, 59, 51, 0.12), 0 2px 6px rgba(36, 59, 51, 0.06);
+
+  /* Geometry & Radiuses */
+  --radius-sm: 6px;
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Dark Mode Tokens (Genuine warm forest-inspired dark theme from Master Prompt) */
+[data-theme='dark'] {
+  --bg-primary: #202923;
+  --bg-surface: #29342D;
+  --bg-surface-elevated: #313D35;
+  --bg-muted: #3D4940;
+  --bg-highlight: #35433A;
+  --bg-active: rgba(145, 197, 165, 0.16);
+
+  --text-primary: #F3F0E8;
+  --text-secondary: #B8C2B8;
+  --text-muted: #8E9A8E;
+  --text-inverse: #202923;
+
+  --accent-primary: #91C5A5;
+  --accent-hover: #A7D6BA;
+  --accent-subtle: rgba(145, 197, 165, 0.15);
+
+  --border-subtle: #3D4940;
+  --border-strong: #4B5A4F;
+  --border-focus: #91C5A5;
+
+  --status-warning: #E09E58;
+  --status-error: #E66A6A;
+  --status-success: #91C5A5;
+
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-popover: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Accent Color Variations */
+[data-accent='sage-mist'] {
+  --accent-primary: #588B77;
+  --accent-hover: #457261;
+}
+
+[data-accent='warm-amber'] {
+  --accent-primary: #B87937;
+  --accent-hover: #9E642A;
+}
+
+[data-accent='soft-rose'] {
+  --accent-primary: #A8606B;
+  --accent-hover: #8F4E58;
+}
+
+[data-accent='sky-mist'] {
+  --accent-primary: #4A7A8C;
+  --accent-hover: #386475;
+}
+
+/* Reduced Motion Mode */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

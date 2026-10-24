@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <linearGradient id="rainSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#222C2A" />
+      <stop offset="50%" stop-color="#32413D" />
+      <stop offset="100%" stop-color="#475B56" />
+    </linearGradient>
+    <linearGradient id="garden" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2B3C35" />
+      <stop offset="100%" stop-color="#141E1A" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#rainSky)" />
+
+  <!-- Out of focus cozy garden outside -->
+  <circle cx="500" cy="550" r="160" fill="#4B6A5C" opacity="0.45" />
+  <circle cx="750" cy="520" r="220" fill="#3D5A4D" opacity="0.4" />
+  <circle cx="1200" cy="540" r="190" fill="#436354" opacity="0.4" />
+  <circle cx="1500" cy="560" r="170" fill="#385246" opacity="0.4" />
+
+  <!-- Warm lantern light glow in the distance -->
+  <circle cx="960" cy="480" r="180" fill="#FFC966" opacity="0.22" />
+  <circle cx="960" cy="480" r="80" fill="#FFE299" opacity="0.35" />
+
+  <!-- Garden foliage -->
+  <path d="M0,720 Q400,660 900,700 T1920,680 L1920,1080 L0,1080 Z" fill="url(#garden)" opacity="0.9" />
+
+  <!-- Cottage Window Frame Silhouettes -->
+  <!-- Left frame -->
+  <rect x="0" y="0" width="80" height="1080" fill="#18221E" />
+  <!-- Right frame -->
+  <rect x="1840" y="0" width="80" height="1080" fill="#18221E" />
+  <!-- Center vertical pane bar -->
+  <rect x="945" y="0" width="30" height="1080" fill="#18221E" opacity="0.85" />
+  <!-- Center horizontal pane bar -->
+  <rect x="0" y="525" width="1920" height="30" fill="#18221E" opacity="0.85" />
+  <!-- Bottom cozy wooden window sill -->
+  <rect x="0" y="980" width="1920" height="100" fill="#1E2A25" />
+  <rect x="0" y="976" width="1920" height="6" fill="#364941" />
+
+  <!-- Delicate Raindrops on Glass -->
+  <g fill="#A7C4BB" opacity="0.4">
+    <!-- Stream 1 -->
+    <ellipse cx="260" cy="220" rx="4" ry="7" />
+    <ellipse cx="262" cy="245" rx="3" ry="5" />
+    <path d="M261,225 L262,380" stroke="#A7C4BB" stroke-width="1.5" opacity="0.25" />
+    <ellipse cx="262" cy="385" rx="5" ry="9" />
+
+    <!-- Stream 2 -->
+    <ellipse cx="480" cy="160" rx="3.5" ry="6" />
+    <path d="M480,165 L481,280" stroke="#A7C4BB" stroke-width="1.2" opacity="0.2" />
+    <ellipse cx="481" cy="285" rx="4.5" ry="8" />
+
+    <!-- Scattered drops -->
+    <ellipse cx="640" cy="310" rx="4" ry="6.5" />
+    <ellipse cx="720" cy="190" rx="3" ry="5" />
+    <ellipse cx="850" cy="420" rx="5" ry="8" />
+    <ellipse cx="1120" cy="260" rx="4.5" ry="7.5" />
+    <path d="M1120,265 L1121,410" stroke="#A7C4BB" stroke-width="1.5" opacity="0.2" />
+    <ellipse cx="1121" cy="415" rx="6" ry="10" />
+
+    <ellipse cx="1340" cy="180" rx="3.5" ry="6" />
+    <ellipse cx="1450" cy="380" rx="5" ry="8" />
+    <ellipse cx="1620" cy="240" rx="4" ry="7" />
+    <ellipse cx="1710" cy="460" rx="3" ry="5" />
+  </g>
+
+  <!-- Cozy warm steam tint inside -->
+  <rect width="1920" height="1080" fill="#28765F" opacity="0.04" />
+</svg>

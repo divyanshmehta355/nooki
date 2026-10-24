@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <linearGradient id="autumnSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#46545F" />
+      <stop offset="50%" stop-color="#7B8C94" />
+      <stop offset="85%" stop-color="#D1B898" />
+      <stop offset="100%" stop-color="#F2DBC2" />
+    </linearGradient>
+    <linearGradient id="ridgeAutumn1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#B0653B" />
+      <stop offset="100%" stop-color="#703619" />
+    </linearGradient>
+    <linearGradient id="ridgeAutumn2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#914522" />
+      <stop offset="100%" stop-color="#4A1F0D" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#autumnSky)" />
+
+  <!-- Distant mountain ridges -->
+  <path d="M0,520 Q400,450 900,500 T1920,470 L1920,1080 L0,1080 Z" fill="#6B776E" opacity="0.6" />
+
+  <!-- Mid Ridge with Autumn Oak/Maple Canopy -->
+  <path d="M0,640 Q500,560 1100,620 T1920,590 L1920,1080 L0,1080 Z" fill="url(#ridgeAutumn1)" />
+  <g fill="#D97736" opacity="0.8">
+    <circle cx="280" cy="590" r="38" />
+    <circle cx="330" cy="580" r="45" fill="#E89B48" />
+    <circle cx="380" cy="595" r="35" />
+    <circle cx="740" cy="570" r="40" fill="#E08338" />
+    <circle cx="790" cy="560" r="48" fill="#F0AA52" />
+    <circle cx="840" cy="575" r="36" />
+    <circle cx="1380" cy="550" r="44" fill="#C95F28" />
+    <circle cx="1430" cy="540" r="50" fill="#E89B48" />
+    <circle cx="1480" cy="555" r="38" />
+  </g>
+
+  <!-- Closer Ridge -->
+  <path d="M0,760 Q450,690 1000,740 T1920,710 L1920,1080 L0,1080 Z" fill="url(#ridgeAutumn2)" />
+
+  <!-- Foreground Path and Tree Trunks -->
+  <path d="M0,890 Q500,830 1100,870 T1920,840 L1920,1080 L0,1080 Z" fill="#2E1408" />
+
+  <!-- Winding Autumn Leaf Path -->
+  <path d="M820,1080 Q920,950 970,870 L1020,870 Q980,950 960,1080 Z" fill="#A8572A" opacity="0.7" />
+
+  <!-- Foreground Branch with Golden Leaves -->
+  <g fill="#FFAE42" opacity="0.9">
+    <circle cx="120" cy="940" r="6" />
+    <circle cx="180" cy="920" r="7" fill="#E86A33" />
+    <circle cx="260" cy="950" r="5" />
+    <circle cx="480" cy="910" r="7" fill="#F48B29" />
+    <circle cx="620" cy="940" r="6" />
+    <circle cx="1120" cy="930" r="7" fill="#D9531E" />
+    <circle cx="1280" cy="960" r="5" />
+    <circle cx="1480" cy="920" r="7" fill="#F0AA52" />
+    <circle cx="1650" cy="950" r="6" />
+    <circle cx="1780" cy="910" r="7" fill="#E86A33" />
+  </g>
+
+  <!-- Warm Autumn Sun Beam -->
+  <circle cx="1480" cy="420" r="360" fill="#FFDCB0" opacity="0.22" />
+</svg>

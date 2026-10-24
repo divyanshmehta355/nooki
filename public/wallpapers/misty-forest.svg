@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3D5A50" />
+      <stop offset="40%" stop-color="#4F7166" />
+      <stop offset="70%" stop-color="#7B9E8F" />
+      <stop offset="100%" stop-color="#C2D6CC" />
+    </linearGradient>
+    <linearGradient id="mistGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#D7E5DC" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#A5C2B4" stop-opacity="0.2" />
+    </linearGradient>
+    <linearGradient id="hill1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3C564C" />
+      <stop offset="100%" stop-color="#223932" />
+    </linearGradient>
+    <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2D433A" />
+      <stop offset="100%" stop-color="#192A24" />
+    </linearGradient>
+    <linearGradient id="hill3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E322A" />
+      <stop offset="100%" stop-color="#101D18" />
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1920" height="1080" fill="url(#skyGrad)" />
+
+  <!-- Distant mountain ridges -->
+  <path d="M0,520 Q350,440 700,500 T1400,460 T1920,490 L1920,1080 L0,1080 Z" fill="#608476" opacity="0.5" />
+  <rect y="480" width="1920" height="140" fill="url(#mistGrad)" />
+
+  <!-- Mid Ridge with Trees -->
+  <path d="M0,600 Q400,530 850,580 T1600,550 T1920,590 L1920,1080 L0,1080 Z" fill="url(#hill1)" />
+  <g fill="#273E35" opacity="0.85">
+    <polygon points="120,620 140,530 160,620" />
+    <polygon points="145,630 170,510 195,630" />
+    <polygon points="180,640 200,550 220,640" />
+    <polygon points="450,600 475,490 500,600" />
+    <polygon points="485,610 510,480 535,610" />
+    <polygon points="520,620 540,520 560,620" />
+    <polygon points="900,600 925,510 950,600" />
+    <polygon points="940,610 965,495 990,610" />
+    <polygon points="1350,570 1380,470 1410,570" />
+    <polygon points="1395,580 1420,460 1445,580" />
+    <polygon points="1720,610 1745,520 1770,610" />
+    <polygon points="1755,620 1780,500 1805,620" />
+  </g>
+
+  <!-- Rolling mist bank -->
+  <rect y="580" width="1920" height="180" fill="url(#mistGrad)" opacity="0.65" />
+
+  <!-- Closer Ridge -->
+  <path d="M0,710 Q500,640 1000,690 T1920,670 L1920,1080 L0,1080 Z" fill="url(#hill2)" />
+  <g fill="#162922">
+    <polygon points="260,730 295,560 330,730" />
+    <polygon points="310,740 350,530 390,740" />
+    <polygon points="370,750 405,580 440,750" />
+    <polygon points="760,710 800,540 840,710" />
+    <polygon points="820,725 860,515 900,725" />
+    <polygon points="1150,710 1195,530 1240,710" />
+    <polygon points="1220,725 1260,500 1300,725" />
+    <polygon points="1580,690 1625,510 1670,690" />
+    <polygon points="1650,705 1690,480 1730,705" />
+  </g>
+
+  <!-- Foreground Forest Floor and Tall Trees -->
+  <path d="M0,860 Q450,810 950,840 T1920,810 L1920,1080 L0,1080 Z" fill="url(#hill3)" />
+  <g fill="#0D1713">
+    <!-- Tall foreground pine left -->
+    <polygon points="40,940 90,420 140,940" />
+    <polygon points="70,950 120,380 170,950" />
+    <polygon points="110,960 155,450 200,960" />
+    <!-- Center path clearing gap -->
+    <path d="M750,1080 L880,840 L970,840 L1150,1080 Z" fill="#20332B" opacity="0.5" />
+    <!-- Tall foreground pine right -->
+    <polygon points="1750,960 1810,360 1870,960" />
+    <polygon points="1680,950 1735,410 1790,950" />
+    <polygon points="1810,980 1860,440 1910,980" />
+  </g>
+
+  <!-- Warm cozy morning glow overlay -->
+  <circle cx="960" cy="460" r="450" fill="#E8EDD8" opacity="0.18" />
+</svg>

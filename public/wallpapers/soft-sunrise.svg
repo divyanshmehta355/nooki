@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sunriseSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4B4568" />
+      <stop offset="35%" stop-color="#8E6A8A" />
+      <stop offset="65%" stop-color="#D78A82" />
+      <stop offset="85%" stop-color="#F6B894" />
+      <stop offset="100%" stop-color="#FCE1BE" />
+    </linearGradient>
+    <linearGradient id="tuscany1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C28675" />
+      <stop offset="100%" stop-color="#7A4E46" />
+    </linearGradient>
+    <linearGradient id="tuscany2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6E443F" />
+      <stop offset="100%" stop-color="#3D2422" />
+    </linearGradient>
+    <linearGradient id="tuscany3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3C2524" />
+      <stop offset="100%" stop-color="#1E1111" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#sunriseSky)" />
+
+  <!-- Soft Dawn Sun -->
+  <circle cx="960" cy="620" r="140" fill="#FFF2DF" opacity="0.9" />
+  <circle cx="960" cy="620" r="380" fill="#FDD0A8" opacity="0.25" />
+
+  <!-- Soft Tuscan valley morning mist -->
+  <path d="M0,660 Q500,580 1000,640 T1920,600 L1920,1080 L0,1080 Z" fill="url(#tuscany1)" opacity="0.75" />
+  <rect y="640" width="1920" height="60" fill="#FCE1BE" opacity="0.4" />
+
+  <!-- Mid Ridge with Cypress Trees -->
+  <path d="M0,740 Q450,680 950,730 T1920,700 L1920,1080 L0,1080 Z" fill="url(#tuscany2)" />
+  <g fill="#2B1A19">
+    <!-- Slender Tuscan cypress trees -->
+    <polygon points="320,760 332,640 344,760" />
+    <polygon points="340,765 350,620 360,765" />
+    <polygon points="358,768 368,655 378,768" />
+    <polygon points="840,745 850,610 860,745" />
+    <polygon points="858,748 867,630 876,748" />
+    <polygon points="1480,725 1492,600 1504,725" />
+    <polygon points="1500,730 1510,585 1520,730" />
+    <polygon points="1518,735 1527,615 1536,735" />
+  </g>
+
+  <!-- Foreground Ridge -->
+  <path d="M0,860 Q550,800 1150,850 T1920,820 L1920,1080 L0,1080 Z" fill="url(#tuscany3)" />
+
+  <!-- Warm sunrise vignette -->
+  <rect width="1920" height="1080" fill="#B87937" opacity="0.05" />
+</svg>
