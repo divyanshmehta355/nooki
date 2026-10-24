@@ -26,51 +26,51 @@ pub fn log_frontend_event(level: String, message: String) {
 }
 
 #[tauri::command]
-pub fn get_tabs(browser: tauri::State<'_, Arc<BrowserState>>) -> Vec<BrowserTab> {
+pub async fn get_tabs(browser: tauri::State<'_, Arc<BrowserState>>) -> Result<Vec<BrowserTab>, String> {
     let tabs = browser.get_tabs();
     println!("[Nooki Rust] get_tabs() -> {} tab(s)", tabs.len());
-    tabs
+    Ok(tabs)
 }
 
 #[tauri::command]
-pub fn get_active_tab_id(browser: tauri::State<'_, Arc<BrowserState>>) -> String {
+pub async fn get_active_tab_id(browser: tauri::State<'_, Arc<BrowserState>>) -> Result<String, String> {
     let id = browser.get_active_tab_id();
     println!("[Nooki Rust] get_active_tab_id() -> '{}'", id);
-    id
+    Ok(id)
 }
 
 #[tauri::command]
-pub fn create_tab(
+pub async fn create_tab(
     url: Option<String>,
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
-) -> BrowserTab {
+) -> Result<BrowserTab, String> {
     println!("[Nooki Rust] create_tab(url: {:?})", url);
     let tab = browser.create_tab(url.clone());
     let active_id = tab.id.clone();
     manage_webviews_visibility(&app, &browser, &active_id);
     println!("[Nooki Rust] -> Tab created: id={}, url={}", tab.id, tab.url);
-    tab
+    Ok(tab)
 }
 
 #[tauri::command]
-pub fn switch_tab(
+pub async fn switch_tab(
     tab_id: String,
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
-) -> String {
+) -> Result<String, String> {
     println!("[Nooki Rust] switch_tab(tab_id: '{}')", tab_id);
     browser.set_active_tab_id(&tab_id);
     manage_webviews_visibility(&app, &browser, &tab_id);
-    tab_id
+    Ok(tab_id)
 }
 
 #[tauri::command]
-pub fn close_tab(
+pub async fn close_tab(
     tab_id: String,
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
-) -> Option<String> {
+) -> Result<Option<String>, String> {
     println!("[Nooki Rust] close_tab(tab_id: '{}')", tab_id);
     let wv_label = format!("wv-{}", tab_id);
     if let Some(wv) = app.get_webview(&wv_label) {
@@ -83,24 +83,26 @@ pub fn close_tab(
         println!("[Nooki Rust] Next active tab after closing: '{}'", active);
         manage_webviews_visibility(&app, &browser, active);
     }
-    next_active
+    Ok(next_active)
 }
 
 #[tauri::command]
-pub fn reopen_closed_tab(
+pub async fn reopen_closed_tab(
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
-) -> Option<BrowserTab> {
+) -> Result<Option<BrowserTab>, String> {
     println!("[Nooki Rust] reopen_closed_tab called");
-    let tab = browser.reopen_closed_tab()?;
-    let active_id = tab.id.clone();
-    println!("[Nooki Rust] -> Reopened tab: id={}, url={}", tab.id, tab.url);
-    manage_webviews_visibility(&app, &browser, &active_id);
-    Some(tab)
+    let tab = browser.reopen_closed_tab();
+    if let Some(ref t) = tab {
+        let active_id = t.id.clone();
+        println!("[Nooki Rust] -> Reopened tab: id={}, url={}", t.id, t.url);
+        manage_webviews_visibility(&app, &browser, &active_id);
+    }
+    Ok(tab)
 }
 
 #[tauri::command]
-pub fn navigate_tab(
+pub async fn navigate_tab(
     tab_id: String,
     input_url: String,
     browser: tauri::State<'_, Arc<BrowserState>>,
@@ -281,40 +283,43 @@ pub fn navigate_tab(
 }
 
 #[tauri::command]
-pub fn reload_tab(tab_id: String, app: AppHandle) {
+pub async fn reload_tab(tab_id: String, app: AppHandle) -> Result<(), String> {
     println!("[Nooki Rust] reload_tab('{}')", tab_id);
     let wv_label = format!("wv-{}", tab_id);
     if let Some(wv) = app.get_webview(&wv_label) {
         let _ = wv.eval("window.location.reload()");
     }
+    Ok(())
 }
 
 #[tauri::command]
-pub fn go_back(tab_id: String, app: AppHandle) {
+pub async fn go_back(tab_id: String, app: AppHandle) -> Result<(), String> {
     println!("[Nooki Rust] go_back('{}')", tab_id);
     let wv_label = format!("wv-{}", tab_id);
     if let Some(wv) = app.get_webview(&wv_label) {
         let _ = wv.eval("window.history.back()");
     }
+    Ok(())
 }
 
 #[tauri::command]
-pub fn go_forward(tab_id: String, app: AppHandle) {
+pub async fn go_forward(tab_id: String, app: AppHandle) -> Result<(), String> {
     println!("[Nooki Rust] go_forward('{}')", tab_id);
     let wv_label = format!("wv-{}", tab_id);
     if let Some(wv) = app.get_webview(&wv_label) {
         let _ = wv.eval("window.history.forward()");
     }
+    Ok(())
 }
 
 #[tauri::command]
-pub fn update_tab_bounds(
+pub async fn update_tab_bounds(
     width: f64,
     height: f64,
     toolbar_height: f64,
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
-) {
+) -> Result<(), String> {
     {
         let mut th = browser.toolbar_height.write().unwrap();
         *th = toolbar_height;
@@ -328,6 +333,7 @@ pub fn update_tab_bounds(
         let _ = wv.set_position(LogicalPosition::new(0.0, toolbar_height));
         let _ = wv.set_size(LogicalSize::new(width, (height - toolbar_height).max(50.0)));
     }
+    Ok(())
 }
 
 // Helper to show the active webview and hide inactive ones
