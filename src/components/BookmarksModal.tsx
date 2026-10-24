@@ -28,6 +28,17 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
     }
   }, [isOpen]);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleAddBookmark = async (e: React.FormEvent) => {
@@ -62,6 +73,7 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
 
   return (
     <div
+      onClick={onClose}
       style={{
         position: 'fixed',
         top: 0,
@@ -78,6 +90,7 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         className="animate-fade-in"
         style={{
           width: '600px',

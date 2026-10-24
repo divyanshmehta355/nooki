@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Palette,
@@ -40,6 +40,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [clearCacheData, setClearCacheData] = useState(true);
   const [clearCookiesData, setClearCookiesData] = useState(false);
   const [clearSuccess, setClearSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialSection || 'appearance');
+    }
+  }, [isOpen, initialSection]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -85,6 +102,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div
+      onClick={onClose}
       style={{
         position: 'fixed',
         top: 0,
@@ -101,6 +119,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         className="animate-fade-in"
         style={{
           width: '780px',
@@ -319,7 +338,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   {/* Wallpaper Gallery Selection */}
                   {settings.wallpaper_mode !== 'plain' && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginTop: '12px' }}>
-                      {wallpapers.map((wp) => (
+                      {(wallpapers || []).map((wp) => (
                         <div
                           key={wp.id}
                           onClick={() => handleWallpaperSelect(wp.id)}
@@ -432,7 +451,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {filterLists.map((list) => (
+                    {(filterLists || []).map((list) => (
                       <div
                         key={list.id}
                         style={{
@@ -453,7 +472,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                             {list.description}
                           </div>
                           <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                            {list.rule_count.toLocaleString()} rules active · Built-in & verified
+                            {(list.rule_count ?? 0).toLocaleString()} rules active · Built-in & verified
                           </div>
                         </div>
 

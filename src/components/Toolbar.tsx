@@ -31,6 +31,10 @@ interface ToolbarProps {
   onToggleDownloads: () => void;
   onToggleSettings: () => void;
   isShieldOpen: boolean;
+  isBookmarksOpen?: boolean;
+  isHistoryOpen?: boolean;
+  isDownloadsOpen?: boolean;
+  isSettingsOpen?: boolean;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -47,6 +51,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onToggleDownloads,
   onToggleSettings,
   isShieldOpen,
+  isBookmarksOpen = false,
+  isHistoryOpen = false,
+  isDownloadsOpen = false,
+  isSettingsOpen = false,
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -244,7 +252,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           title="Bookmarks (Ctrl+B)"
           onClick={onToggleBookmarks}
-          style={actionBtnStyle}
+          style={{
+            ...actionBtnStyle,
+            background: isBookmarksOpen ? 'var(--accent-subtle)' : 'transparent',
+            color: isBookmarksOpen ? 'var(--accent-primary)' : 'var(--text-secondary)',
+          }}
         >
           <BookmarkIcon size={16} />
         </button>
@@ -253,7 +265,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           title="History (Ctrl+H)"
           onClick={onToggleHistory}
-          style={actionBtnStyle}
+          style={{
+            ...actionBtnStyle,
+            background: isHistoryOpen ? 'var(--accent-subtle)' : 'transparent',
+            color: isHistoryOpen ? 'var(--accent-primary)' : 'var(--text-secondary)',
+          }}
         >
           <Clock size={16} />
         </button>
@@ -262,7 +278,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           title="Downloads (Ctrl+J)"
           onClick={onToggleDownloads}
-          style={actionBtnStyle}
+          style={{
+            ...actionBtnStyle,
+            background: isDownloadsOpen ? 'var(--accent-subtle)' : 'transparent',
+            color: isDownloadsOpen ? 'var(--accent-primary)' : 'var(--text-secondary)',
+          }}
         >
           <Download size={16} />
         </button>
@@ -271,7 +291,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           title="Settings (Ctrl+,)"
           onClick={onToggleSettings}
-          style={actionBtnStyle}
+          style={{
+            ...actionBtnStyle,
+            background: isSettingsOpen ? 'var(--accent-subtle)' : 'transparent',
+            color: isSettingsOpen ? 'var(--accent-primary)' : 'var(--text-secondary)',
+          }}
         >
           <Settings size={16} />
         </button>

@@ -23,6 +23,17 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
     }
   }, [isOpen]);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSearch = (q: string) => {
@@ -53,6 +64,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
 
   return (
     <div
+      onClick={onClose}
       style={{
         position: 'fixed',
         top: 0,
@@ -69,6 +81,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         className="animate-fade-in"
         style={{
           width: '640px',

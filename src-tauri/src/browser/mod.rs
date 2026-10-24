@@ -18,6 +18,7 @@ pub struct BrowserState {
     pub history: HistoryStore,
     pub downloads: DownloadManager,
     pub toolbar_height: RwLock<f64>,
+    pub webviews_hidden: RwLock<bool>,
 }
 
 impl BrowserState {
@@ -33,6 +34,7 @@ impl BrowserState {
             history: HistoryStore::new(app_data_dir),
             downloads: DownloadManager::new(app_data_dir),
             toolbar_height: RwLock::new(84.0),
+            webviews_hidden: RwLock::new(false),
         }
     }
 

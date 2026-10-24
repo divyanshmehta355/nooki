@@ -19,6 +19,22 @@ import {
 } from './types/browser';
 import * as api from './services/api';
 
+const defaultSettings: UserSettings = {
+  theme: 'system',
+  accent_color: 'nova-green',
+  wallpaper_mode: 'daily',
+  selected_wallpaper_id: 'misty-forest',
+  search_engine: 'duckduckgo',
+  startup_behavior: 'newtab',
+  shield_enabled: true,
+  cosmetic_filtering_enabled: true,
+  strip_tracking_params: true,
+  clear_on_exit: false,
+  reduced_motion: false,
+  default_download_directory: 'C:\\Downloads',
+  restored_tabs: ['nooki://newtab'],
+};
+
 export function App() {
   const [tabs, setTabs] = useState<BrowserTab[]>([]);
   const [activeTabId, setActiveTabId] = useState<string>('');
@@ -26,7 +42,7 @@ export function App() {
   const [wallpapers, setWallpapers] = useState<ScenicWallpaper[]>([]);
   const [activeWallpaper, setActiveWallpaper] = useState<ScenicWallpaper | null>(null);
   const [filterLists, setFilterLists] = useState<FilterListMetadata[]>([]);
-  const [settings, setSettings] = useState<UserSettings | null>(null);
+  const [settings, setSettings] = useState<UserSettings>(defaultSettings);
 
   // Modals & Popovers
   const [isShieldOpen, setIsShieldOpen] = useState(false);
@@ -38,18 +54,38 @@ export function App() {
 
   const headerRef = useRef<HTMLDivElement>(null);
 
+  // Synchronize native webviews visibility when any modal is open
+  const isAnyModalOpen =
+    isSettingsOpen ||
+    isBookmarksOpen ||
+    isHistoryOpen ||
+    isDownloadsOpen ||
+    isShieldOpen;
+
+  useEffect(() => {
+    api.setWebviewsHidden(isAnyModalOpen);
+  }, [isAnyModalOpen]);
+
   // Initialize application data
   useEffect(() => {
     async function init() {
-      const initialSettings = await api.getUserSettings();
-      setSettings(initialSettings);
+      let loadedSettings = defaultSettings;
+      try {
+        const fetched = await api.getUserSettings();
+        if (fetched) {
+          loadedSettings = fetched;
+          setSettings(fetched);
+        }
+      } catch (err) {
+        console.warn('Failed to load settings from backend:', err);
+      }
 
       const allWallpapers = await api.getWallpapers();
       setWallpapers(allWallpapers);
 
       const dailyWp = await api.getDailyWallpaper();
-      if (initialSettings.wallpaper_mode === 'custom' && initialSettings.selected_wallpaper_id) {
-        const found = allWallpapers.find((w) => w.id === initialSettings.selected_wallpaper_id);
+      if (loadedSettings.wallpaper_mode === 'custom' && loadedSettings.selected_wallpaper_id) {
+        const found = allWallpapers.find((w) => w.id === loadedSettings.selected_wallpaper_id);
         setActiveWallpaper(found || dailyWp);
       } else {
         setActiveWallpaper(dailyWp);
@@ -289,9 +325,13 @@ export function App() {
           onToggleDownloads={() => setIsDownloadsOpen(!isDownloadsOpen)}
           onToggleSettings={() => {
             setSettingsSection('appearance');
-            setIsSettingsOpen(true);
+            setIsSettingsOpen((prev) => !prev);
           }}
           isShieldOpen={isShieldOpen}
+          isBookmarksOpen={isBookmarksOpen}
+          isHistoryOpen={isHistoryOpen}
+          isDownloadsOpen={isDownloadsOpen}
+          isSettingsOpen={isSettingsOpen}
         />
 
         {/* Bookmarks Bar */}

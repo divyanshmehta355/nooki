@@ -208,8 +208,13 @@ pub async fn navigate_tab(
         if let Err(e) = wv.navigate(sanitized_url) {
             eprintln!("[Nooki Rust ERROR] Failed to navigate existing webview '{}': {:?}", wv_label, e);
         }
-        let _ = wv.show();
-        let _ = wv.set_focus();
+        let is_hidden = *browser.webviews_hidden.read().unwrap();
+        if !is_hidden {
+            let _ = wv.show();
+            let _ = wv.set_focus();
+        } else {
+            let _ = wv.hide();
+        }
     } else if let Some(window) = app.get_window("main") {
         println!("[Nooki Rust] Creating new child webview '{}' on main window...", wv_label);
         let top_offset = *browser.toolbar_height.read().unwrap();
@@ -263,8 +268,13 @@ pub async fn navigate_tab(
         match add_res {
             Ok(child_wv) => {
                 println!("[Nooki Rust SUCCESS] Child webview '{}' successfully added to window!", wv_label);
-                let _ = child_wv.show();
-                let _ = child_wv.set_focus();
+                let is_hidden = *browser.webviews_hidden.read().unwrap();
+                if !is_hidden {
+                    let _ = child_wv.show();
+                    let _ = child_wv.set_focus();
+                } else {
+                    let _ = child_wv.hide();
+                }
             }
             Err(err) => {
                 eprintln!("[Nooki Rust CRITICAL ERROR] window.add_child('{}') failed: {:?}", wv_label, err);
@@ -338,20 +348,37 @@ pub async fn update_tab_bounds(
 
 // Helper to show the active webview and hide inactive ones
 fn manage_webviews_visibility(app: &AppHandle, browser: &Arc<BrowserState>, active_id: &str) {
+    let is_hidden = *browser.webviews_hidden.read().unwrap();
     let tabs = browser.get_tabs();
     for tab in tabs {
         let wv_label = format!("wv-{}", tab.id);
         if let Some(wv) = app.get_webview(&wv_label) {
-            if tab.id == active_id && !tab.url.starts_with("nooki://") {
+            if !is_hidden && tab.id == active_id && !tab.url.starts_with("nooki://") {
                 println!("[Nooki Rust] Showing active webview '{}'", wv_label);
                 let _ = wv.show();
                 let _ = wv.set_focus();
             } else {
-                println!("[Nooki Rust] Hiding inactive webview '{}'", wv_label);
+                println!("[Nooki Rust] Hiding webview '{}'", wv_label);
                 let _ = wv.hide();
             }
         }
     }
+}
+
+#[tauri::command]
+pub async fn set_webviews_hidden(
+    hidden: bool,
+    browser: tauri::State<'_, Arc<BrowserState>>,
+    app: AppHandle,
+) -> Result<(), String> {
+    println!("[Nooki Rust] set_webviews_hidden(hidden: {})", hidden);
+    {
+        let mut h = browser.webviews_hidden.write().unwrap();
+        *h = hidden;
+    }
+    let active_id = browser.get_active_tab_id();
+    manage_webviews_visibility(&app, &browser, &active_id);
+    Ok(())
 }
 
 /// Detects whether input is already a valid URL or should be treated as a search query.

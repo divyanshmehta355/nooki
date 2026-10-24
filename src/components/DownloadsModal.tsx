@@ -17,6 +17,17 @@ export const DownloadsModal: React.FC<DownloadsModalProps> = ({ isOpen, onClose 
     }
   }, [isOpen]);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleClearCompleted = async () => {
@@ -26,6 +37,7 @@ export const DownloadsModal: React.FC<DownloadsModalProps> = ({ isOpen, onClose 
 
   return (
     <div
+      onClick={onClose}
       style={{
         position: 'fixed',
         top: 0,
@@ -42,6 +54,7 @@ export const DownloadsModal: React.FC<DownloadsModalProps> = ({ isOpen, onClose 
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         className="animate-fade-in"
         style={{
           width: '560px',

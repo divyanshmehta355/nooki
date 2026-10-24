@@ -342,6 +342,10 @@ export async function updateTabBounds(
   return tryInvoke('update_tab_bounds', { width, height, toolbarHeight }, () => {});
 }
 
+export async function setWebviewsHidden(hidden: boolean): Promise<void> {
+  return tryInvoke('set_webviews_hidden', { hidden }, () => {});
+}
+
 // --- SHIELD & FILTERING ---
 
 export async function getTabShieldStats(tabId: string): Promise<TabShieldStats> {

@@ -62,6 +62,7 @@ pub fn run() {
             commands::go_back,
             commands::go_forward,
             commands::update_tab_bounds,
+            commands::set_webviews_hidden,
             // Shield & Filtering
             commands::get_tab_shield_stats,
             commands::get_session_shield_stats,
