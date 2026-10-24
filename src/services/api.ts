@@ -154,17 +154,76 @@ let inMemoryFilterLists: FilterListMetadata[] = [
   },
 ];
 
+export interface DiagnosticLog {
+  id: string;
+  time: string;
+  level: 'info' | 'warn' | 'error';
+  source: string;
+  message: string;
+}
+
+const recentLogs: DiagnosticLog[] = [];
+type LogListener = (logs: DiagnosticLog[]) => void;
+const logListeners = new Set<LogListener>();
+
+export function getDiagnosticLogs(): DiagnosticLog[] {
+  return [...recentLogs];
+}
+
+export function subscribeDiagnosticLogs(listener: LogListener): () => void {
+  logListeners.add(listener);
+  listener([...recentLogs]);
+  return () => {
+    logListeners.delete(listener);
+  };
+}
+
+export function recordLog(level: 'info' | 'warn' | 'error', source: string, message: string) {
+  const item: DiagnosticLog = {
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    time: new Date().toLocaleTimeString(),
+    level,
+    source,
+    message,
+  };
+  recentLogs.push(item);
+  if (recentLogs.length > 100) recentLogs.shift();
+  logListeners.forEach((fn) => fn([...recentLogs]));
+
+  // Log to browser devtools
+  if (level === 'error') {
+    console.error(`[${source}] ${message}`);
+  } else if (level === 'warn') {
+    console.warn(`[${source}] ${message}`);
+  } else {
+    console.log(`[${source}] ${message}`);
+  }
+
+  // Forward to Rust terminal if running in Tauri
+  if (typeof window !== 'undefined' && Boolean((window as any).__TAURI_INTERNALS__)) {
+    invoke('log_frontend_event', { level, message: `[${source}] ${message}` }).catch(() => {});
+  }
+}
+
 async function tryInvoke<T>(
   cmd: string,
   args: Record<string, unknown> = {},
   fallback: () => T | Promise<T>
 ): Promise<T> {
-  if (typeof window !== 'undefined' && Boolean((window as any).__TAURI_INTERNALS__)) {
+  const isTauri = typeof window !== 'undefined' && Boolean((window as any).__TAURI_INTERNALS__);
+  if (isTauri) {
     try {
-      return await invoke<T>(cmd, args);
-    } catch (err) {
-      console.warn(`[Tauri IPC] ${cmd} failed, using local state:`, err);
+      const argsStr = Object.keys(args).length ? ` with ${JSON.stringify(args)}` : '';
+      recordLog('info', 'IPC', `Invoking "${cmd}"${argsStr}`);
+      const result = await invoke<T>(cmd, args);
+      recordLog('info', 'IPC', `"${cmd}" completed successfully`);
+      return result;
+    } catch (err: any) {
+      const errMsg = typeof err === 'string' ? err : err?.message || JSON.stringify(err);
+      recordLog('error', 'IPC', `Command "${cmd}" FAILED: ${errMsg}`);
     }
+  } else {
+    recordLog('info', 'Web', `Browser preview: simulated "${cmd}" via memory store`);
   }
   return fallback();
 }

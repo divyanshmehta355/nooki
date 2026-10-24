@@ -28,7 +28,28 @@ pub fn run() {
         .manage(browser_state)
         .manage(adblock_engine)
         .manage(settings_manager)
+        .setup(|app| {
+            println!("============================================================");
+            println!("🌿 NOOKI BROWSER RUST BACKEND INITIALIZED");
+            println!("============================================================");
+
+            #[cfg(debug_assertions)]
+            {
+                if let Some(win) = app.get_webview_window("main") {
+                    println!("[Nooki Rust] Main window found: {:?}", win.label());
+                    win.open_devtools();
+                    println!("[Nooki Rust] DevTools automatically opened for debugging.");
+                } else if let Some(win) = app.get_window("main") {
+                    println!("[Nooki Rust] Main window (as Window) found: {:?}", win.label());
+                } else {
+                    eprintln!("[Nooki Rust WARNING] Could not find window 'main' during setup!");
+                }
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
+            // Logging
+            commands::log_frontend_event,
             // Tabs & Navigation
             commands::get_tabs,
             commands::get_active_tab_id,

@@ -16,13 +16,27 @@ use url::Url;
 // --- TABS & NAVIGATION COMMANDS ---
 
 #[tauri::command]
+pub fn log_frontend_event(level: String, message: String) {
+    let prefix = match level.to_lowercase().as_str() {
+        "error" => "🛑 [Nooki JS ERROR]",
+        "warn" => "⚠️ [Nooki JS WARN]",
+        _ => "💬 [Nooki JS INFO]",
+    };
+    println!("{} {}", prefix, message);
+}
+
+#[tauri::command]
 pub fn get_tabs(browser: tauri::State<'_, Arc<BrowserState>>) -> Vec<BrowserTab> {
-    browser.get_tabs()
+    let tabs = browser.get_tabs();
+    println!("[Nooki Rust] get_tabs() -> {} tab(s)", tabs.len());
+    tabs
 }
 
 #[tauri::command]
 pub fn get_active_tab_id(browser: tauri::State<'_, Arc<BrowserState>>) -> String {
-    browser.get_active_tab_id()
+    let id = browser.get_active_tab_id();
+    println!("[Nooki Rust] get_active_tab_id() -> '{}'", id);
+    id
 }
 
 #[tauri::command]
@@ -31,9 +45,11 @@ pub fn create_tab(
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
 ) -> BrowserTab {
+    println!("[Nooki Rust] create_tab(url: {:?})", url);
     let tab = browser.create_tab(url.clone());
     let active_id = tab.id.clone();
     manage_webviews_visibility(&app, &browser, &active_id);
+    println!("[Nooki Rust] -> Tab created: id={}, url={}", tab.id, tab.url);
     tab
 }
 
@@ -43,6 +59,7 @@ pub fn switch_tab(
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
 ) -> String {
+    println!("[Nooki Rust] switch_tab(tab_id: '{}')", tab_id);
     browser.set_active_tab_id(&tab_id);
     manage_webviews_visibility(&app, &browser, &tab_id);
     tab_id
@@ -54,13 +71,16 @@ pub fn close_tab(
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
 ) -> Option<String> {
+    println!("[Nooki Rust] close_tab(tab_id: '{}')", tab_id);
     let wv_label = format!("wv-{}", tab_id);
     if let Some(wv) = app.get_webview(&wv_label) {
+        println!("[Nooki Rust] Closing webview '{}'", wv_label);
         let _ = wv.close();
     }
 
     let next_active = browser.close_tab(&tab_id);
     if let Some(ref active) = next_active {
+        println!("[Nooki Rust] Next active tab after closing: '{}'", active);
         manage_webviews_visibility(&app, &browser, active);
     }
     next_active
@@ -71,8 +91,10 @@ pub fn reopen_closed_tab(
     browser: tauri::State<'_, Arc<BrowserState>>,
     app: AppHandle,
 ) -> Option<BrowserTab> {
+    println!("[Nooki Rust] reopen_closed_tab called");
     let tab = browser.reopen_closed_tab()?;
     let active_id = tab.id.clone();
+    println!("[Nooki Rust] -> Reopened tab: id={}, url={}", tab.id, tab.url);
     manage_webviews_visibility(&app, &browser, &active_id);
     Some(tab)
 }
@@ -86,13 +108,17 @@ pub fn navigate_tab(
     settings: tauri::State<'_, Arc<SettingsManager>>,
     app: AppHandle,
 ) -> Result<BrowserTab, String> {
+    println!("------------------------------------------------------------");
+    println!("[Nooki Rust] navigate_tab(tab_id: '{}', input: '{}')", tab_id, input_url);
     let user_settings = settings.get();
 
     // 1. Resolve URL or Search Query
     let target_url = resolve_url_or_search(&input_url, &user_settings.search_engine);
+    println!("[Nooki Rust] -> Resolved target URL: '{}'", target_url);
 
     // 2. Check for internal nooki:// protocol
     if target_url.starts_with("nooki://") {
+        println!("[Nooki Rust] -> Internal page requested: '{}'", target_url);
         browser.update_tab(&tab_id, |t| {
             t.url = target_url.clone();
             t.title = if target_url == "nooki://newtab" {
@@ -106,6 +132,7 @@ pub fn navigate_tab(
         // Hide child webview so React internal UI is visible
         let wv_label = format!("wv-{}", tab_id);
         if let Some(wv) = app.get_webview(&wv_label) {
+            println!("[Nooki Rust] Hiding webview '{}' for internal page", wv_label);
             let _ = wv.hide();
         }
 
@@ -117,20 +144,29 @@ pub fn navigate_tab(
     }
 
     // 3. Parse and sanitize URL tracking parameters if enabled
-    let parsed = Url::parse(&target_url).map_err(|e| e.to_string())?;
+    let parsed = Url::parse(&target_url).map_err(|e| {
+        eprintln!("[Nooki Rust ERROR] Url::parse failed for '{}': {:?}", target_url, e);
+        e.to_string()
+    })?;
     let (sanitized_url, _stripped_count) = if user_settings.strip_tracking_params {
-        sanitize_tracking_params(&parsed)
+        let (s, count) = sanitize_tracking_params(&parsed);
+        if count > 0 {
+            println!("[Nooki Shield] Stripped {} tracking query parameter(s)", count);
+        }
+        (s, count)
     } else {
         (parsed, 0)
     };
 
     let domain = sanitized_url.host_str().unwrap_or("").to_string();
+    println!("[Nooki Rust] Sanitized URL: '{}', domain: '{}'", sanitized_url, domain);
 
     // 4. Check AdBlockEngine for top-level navigation (malware / ad blocking)
     {
         let eng = engine.read().unwrap();
         let decision = eng.check_request(&tab_id, &sanitized_url, &domain, ResourceType::Subdocument);
         if let crate::filtering::rules::FilterDecision::Block { ref rule, .. } = decision {
+            println!("[Nooki Shield BLOCKED] Top-level navigation to '{}' (rule: {})", domain, rule);
             browser.update_tab(&tab_id, |t| {
                 t.url = format!("nooki://blocked?domain={}&rule={}", domain, rule);
                 t.title = format!("Blocked: {}", domain);
@@ -160,17 +196,20 @@ pub fn navigate_tab(
 
     // 6. Manage or create child Webview
     let wv_label = format!("wv-{}", tab_id);
-    let app_handle_clone = app.clone();
     let nav_tab_id = tab_id.clone();
     let load_tab_id = tab_id.clone();
     let browser_clone = Arc::clone(&browser);
     let engine_clone = Arc::clone(&engine);
 
     if let Some(wv) = app.get_webview(&wv_label) {
-        let _ = wv.navigate(sanitized_url);
+        println!("[Nooki Rust] Navigating existing webview '{}' to '{}'", wv_label, sanitized_url);
+        if let Err(e) = wv.navigate(sanitized_url) {
+            eprintln!("[Nooki Rust ERROR] Failed to navigate existing webview '{}': {:?}", wv_label, e);
+        }
         let _ = wv.show();
         let _ = wv.set_focus();
     } else if let Some(window) = app.get_window("main") {
+        println!("[Nooki Rust] Creating new child webview '{}' on main window...", wv_label);
         let top_offset = *browser.toolbar_height.read().unwrap();
         let (w, h) = window
             .inner_size()
@@ -179,6 +218,8 @@ pub fn navigate_tab(
         let scale = window.scale_factor().unwrap_or(1.0);
         let logical_w = w / scale;
         let logical_h = h / scale;
+        let child_h = (logical_h - top_offset).max(100.0);
+        println!("[Nooki Rust] Main window size: {}x{} (scale: {}). Attaching webview at y={}, size={}x{}", w, h, scale, top_offset, logical_w, child_h);
 
         let cosmetic_css = engine.read().unwrap().generate_cosmetic_css(&domain);
         let init_script = format!(
@@ -186,18 +227,23 @@ pub fn navigate_tab(
             cosmetic_css
         );
 
+        let nav_log_id = nav_tab_id.clone();
         let builder = WebviewBuilder::new(&wv_label, WebviewUrl::External(sanitized_url))
             .initialization_script(&init_script)
             .on_navigation(move |url| {
                 let host = url.host_str().unwrap_or("");
                 let eng = engine_clone.read().unwrap();
-                let decision = eng.check_request(&nav_tab_id, url, host, ResourceType::Subdocument);
+                let decision = eng.check_request(&nav_log_id, url, host, ResourceType::Subdocument);
                 match decision {
-                    crate::filtering::rules::FilterDecision::Block { .. } => false,
+                    crate::filtering::rules::FilterDecision::Block { ref rule, .. } => {
+                        println!("[Nooki Shield BLOCKED] Subresource '{}' (rule: {})", url, rule);
+                        false
+                    }
                     crate::filtering::rules::FilterDecision::Allow => true,
                 }
             })
-            .on_page_load(move |_url, payload| {
+            .on_page_load(move |wv, payload| {
+                println!("[Nooki Rust] Page load event for tab {}: label={}, url={}, event={:?}", load_tab_id, wv.label(), payload.url(), payload.event());
                 if matches!(payload.event(), tauri::webview::PageLoadEvent::Finished) {
                     browser_clone.update_tab(&load_tab_id, |t| {
                         t.is_loading = false;
@@ -206,17 +252,26 @@ pub fn navigate_tab(
                 }
             });
 
-        let _ = window.add_child(
+        let add_res = window.add_child(
             builder,
             LogicalPosition::new(0.0, top_offset),
-            LogicalSize::new(logical_w, (logical_h - top_offset).max(100.0)),
+            LogicalSize::new(logical_w, child_h),
         );
 
-        if let Some(wv) = app_handle_clone.get_webview(&wv_label) {
-            let _ = wv.show();
-            let _ = wv.set_focus();
+        match add_res {
+            Ok(child_wv) => {
+                println!("[Nooki Rust SUCCESS] Child webview '{}' successfully added to window!", wv_label);
+                let _ = child_wv.show();
+                let _ = child_wv.set_focus();
+            }
+            Err(err) => {
+                eprintln!("[Nooki Rust CRITICAL ERROR] window.add_child('{}') failed: {:?}", wv_label, err);
+            }
         }
+    } else {
+        eprintln!("[Nooki Rust CRITICAL ERROR] Could not locate window 'main' to attach webview '{}'!", wv_label);
     }
+    println!("------------------------------------------------------------");
 
     browser
         .get_tabs()
@@ -227,6 +282,7 @@ pub fn navigate_tab(
 
 #[tauri::command]
 pub fn reload_tab(tab_id: String, app: AppHandle) {
+    println!("[Nooki Rust] reload_tab('{}')", tab_id);
     let wv_label = format!("wv-{}", tab_id);
     if let Some(wv) = app.get_webview(&wv_label) {
         let _ = wv.eval("window.location.reload()");
@@ -235,6 +291,7 @@ pub fn reload_tab(tab_id: String, app: AppHandle) {
 
 #[tauri::command]
 pub fn go_back(tab_id: String, app: AppHandle) {
+    println!("[Nooki Rust] go_back('{}')", tab_id);
     let wv_label = format!("wv-{}", tab_id);
     if let Some(wv) = app.get_webview(&wv_label) {
         let _ = wv.eval("window.history.back()");
@@ -243,6 +300,7 @@ pub fn go_back(tab_id: String, app: AppHandle) {
 
 #[tauri::command]
 pub fn go_forward(tab_id: String, app: AppHandle) {
+    println!("[Nooki Rust] go_forward('{}')", tab_id);
     let wv_label = format!("wv-{}", tab_id);
     if let Some(wv) = app.get_webview(&wv_label) {
         let _ = wv.eval("window.history.forward()");
@@ -266,6 +324,7 @@ pub fn update_tab_bounds(
     let wv_label = format!("wv-{}", active_id);
 
     if let Some(wv) = app.get_webview(&wv_label) {
+        println!("[Nooki Rust] update_tab_bounds for active webview '{}': size={}x{}, top_offset={}", wv_label, width, height - toolbar_height, toolbar_height);
         let _ = wv.set_position(LogicalPosition::new(0.0, toolbar_height));
         let _ = wv.set_size(LogicalSize::new(width, (height - toolbar_height).max(50.0)));
     }
@@ -278,9 +337,11 @@ fn manage_webviews_visibility(app: &AppHandle, browser: &Arc<BrowserState>, acti
         let wv_label = format!("wv-{}", tab.id);
         if let Some(wv) = app.get_webview(&wv_label) {
             if tab.id == active_id && !tab.url.starts_with("nooki://") {
+                println!("[Nooki Rust] Showing active webview '{}'", wv_label);
                 let _ = wv.show();
                 let _ = wv.set_focus();
             } else {
+                println!("[Nooki Rust] Hiding inactive webview '{}'", wv_label);
                 let _ = wv.hide();
             }
         }

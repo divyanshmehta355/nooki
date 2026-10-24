@@ -9,6 +9,7 @@ import { BookmarksModal } from './components/BookmarksModal';
 import { HistoryModal } from './components/HistoryModal';
 import { DownloadsModal } from './components/DownloadsModal';
 import { ErrorPage } from './components/ErrorPage';
+import { DiagnosticDrawer } from './components/DiagnosticDrawer';
 import {
   Bookmark,
   BrowserTab,
@@ -359,7 +360,49 @@ export function App() {
             }}
             blockedCount={activeTab ? activeTab.blocked_ads_count : 0}
           />
-        ) : null}
+        ) : (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              background: 'var(--bg-primary)',
+            }}
+          >
+            {typeof window !== 'undefined' && Boolean((window as any).__TAURI_INTERNALS__) ? (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  color: 'var(--text-secondary)',
+                  gap: '8px',
+                }}
+              >
+                <p style={{ fontSize: '15px' }}>Viewing: <strong style={{ color: 'var(--text-primary)' }}>{activeTab?.url}</strong></p>
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Native WebView2 container active.</p>
+              </div>
+            ) : (
+              <iframe
+                title={activeTab?.title || 'Web View'}
+                src={activeTab?.url}
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  background: '#FFFFFF',
+                }}
+                onLoad={() => {
+                  api.recordLog('info', 'Web', `Preview iframe loaded: ${activeTab?.url}`);
+                }}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -399,6 +442,9 @@ export function App() {
         isOpen={isDownloadsOpen}
         onClose={() => setIsDownloadsOpen(false)}
       />
+
+      {/* Live Diagnostic Logs Drawer */}
+      <DiagnosticDrawer activeTabId={activeTab?.id} activeUrl={activeTab?.url} />
     </div>
   );
 }
