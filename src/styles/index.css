@@ -27,6 +27,11 @@ input, button, select, textarea {
   background: transparent;
 }
 
+input, textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
 button {
   cursor: pointer;
   display: inline-flex;

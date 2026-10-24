@@ -161,6 +161,7 @@ export const NewTabPage: React.FC<NewTabPageProps> = ({
             backgroundPosition: 'center',
             filter: 'contrast(1.05) saturate(1.02)',
             transition: 'background-image 400ms ease',
+            pointerEvents: 'none',
           }}
         />
       )}
@@ -176,6 +177,7 @@ export const NewTabPage: React.FC<NewTabPageProps> = ({
             height: '100%',
             background: `radial-gradient(ellipse at center, rgba(32, 41, 35, 0.45) 0%, rgba(20, 26, 22, 0.72) 100%)`,
             backdropFilter: 'blur(1px)',
+            pointerEvents: 'none',
           }}
         />
       )}

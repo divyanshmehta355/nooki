@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Nooki Browser",
         "width": 1280,
         "height": 820,
